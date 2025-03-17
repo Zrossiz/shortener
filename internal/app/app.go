@@ -10,8 +10,13 @@ import (
 	"time"
 
 	"github.com/Zrossiz/shortener/internal/config"
+	"github.com/Zrossiz/shortener/internal/service"
 	"github.com/Zrossiz/shortener/internal/storage"
+	"github.com/Zrossiz/shortener/internal/transport/http/handler"
+	"github.com/Zrossiz/shortener/internal/transport/http/router"
 	logger "github.com/Zrossiz/shortener/pkg/log"
+	_ "github.com/lib/pq"
+
 	"go.uber.org/zap"
 )
 
@@ -34,19 +39,27 @@ func Start() {
 	}
 	defer conn.Close()
 
+	store := storage.New(conn)
+
+	serv := service.NewService(store, log)
+
+	h := handler.NewHandler(&serv)
+
+	r := router.NewRouter(h)
+
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 
-	go startServer(cfg.ServerPort, log, stop)
+	go startServer(cfg.ServerPort, r, log, stop)
 
 	<-stop
 	log.Info("Shutting down gracefully...")
 }
 
-func startServer(addr string, log *zap.Logger, stop chan os.Signal) {
+func startServer(addr string, h http.Handler, log *zap.Logger, stop chan os.Signal) {
 	server := &http.Server{
 		Addr:    addr,
-		Handler: nil,
+		Handler: h,
 	}
 
 	log.Sugar().Infof("Starting server on %s", addr)

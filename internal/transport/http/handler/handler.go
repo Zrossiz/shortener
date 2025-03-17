@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/Zrossiz/shortener/internal/apperrors"
+	"github.com/Zrossiz/shortener/internal/dto"
 )
 
 type Handler struct {
@@ -21,14 +22,14 @@ func NewHandler(s Service) *Handler {
 }
 
 func (h *Handler) Create(rw http.ResponseWriter, r *http.Request) {
-	var originalURL string
-	err := json.NewDecoder(r.Body).Decode(&originalURL)
+	var body dto.CreateURLDTO
+	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
 		http.Error(rw, apperrors.ErrInvalidRequestBody, http.StatusBadRequest)
 		return
 	}
 
-	hash, err := h.s.Create(originalURL)
+	hash, err := h.s.Create(body.OriginalURL)
 	if err != nil {
 		http.Error(rw, apperrors.ErrInternalServer, http.StatusInternalServerError)
 		return
@@ -43,6 +44,6 @@ func (h *Handler) Create(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) Get(rw *http.ResponseWriter, r *http.Request) {
+func (h *Handler) Get(rw http.ResponseWriter, r *http.Request) {
 
 }
