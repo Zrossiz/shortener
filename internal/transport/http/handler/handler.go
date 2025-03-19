@@ -6,6 +6,7 @@ import (
 
 	"github.com/Zrossiz/shortener/internal/apperrors"
 	"github.com/Zrossiz/shortener/internal/dto"
+	"github.com/go-chi/chi/v5"
 )
 
 type Handler struct {
@@ -22,7 +23,7 @@ func NewHandler(s Service) *Handler {
 }
 
 func (h *Handler) Create(rw http.ResponseWriter, r *http.Request) {
-	var body dto.CreateURLDTO
+	var body dto.CreateURL
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
 		http.Error(rw, apperrors.ErrInvalidRequestBody, http.StatusBadRequest)
@@ -45,5 +46,13 @@ func (h *Handler) Create(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Get(rw http.ResponseWriter, r *http.Request) {
+	hash := chi.URLParam(r, "hash")
 
+	originalUrl, err := h.s.Get(hash)
+	if err != nil {
+		http.Error(rw, apperrors.ErrInternalServer, http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(rw, r, originalUrl, http.StatusMovedPermanently)
 }
