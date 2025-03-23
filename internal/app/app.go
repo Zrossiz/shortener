@@ -11,7 +11,8 @@ import (
 
 	"github.com/Zrossiz/shortener/internal/config"
 	"github.com/Zrossiz/shortener/internal/service"
-	"github.com/Zrossiz/shortener/internal/storage"
+	"github.com/Zrossiz/shortener/internal/storage/postgres"
+	redisdb "github.com/Zrossiz/shortener/internal/storage/redis"
 	"github.com/Zrossiz/shortener/internal/transport/http/handler"
 	"github.com/Zrossiz/shortener/internal/transport/http/router"
 	logger "github.com/Zrossiz/shortener/pkg/log"
@@ -33,15 +34,22 @@ func Start() {
 		os.Exit(1)
 	}
 
-	conn, err := storage.Connect(cfg.DBURI)
+	postgresConn, err := postgres.Connect(cfg.DBURI)
 	if err != nil {
-		log.Fatal("error connect", zap.Error(err))
+		log.Fatal("error connect postgres", zap.Error(err))
 	}
-	defer conn.Close()
+	defer postgresConn.Close()
 
-	store := storage.New(conn)
+	redisConn, err := redisdb.Connect(cfg)
+	if err != nil {
+		log.Fatal("error connect redis", zap.Error(err))
+	}
+	defer redisConn.Close()
 
-	serv := service.NewService(store, log)
+	postgresStore := postgres.New(postgresConn)
+	redisStore := redisdb.New(redisConn)
+
+	serv := service.NewService(postgresStore, redisStore, log)
 
 	h := handler.NewHandler(&serv)
 

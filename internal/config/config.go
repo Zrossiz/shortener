@@ -7,9 +7,11 @@ import (
 )
 
 type Config struct {
-	DBURI      string
-	LogLevel   string
-	ServerPort string
+	DBURI         string
+	LogLevel      string
+	ServerPort    string
+	RedisAddress  string
+	RedisPassword string
 }
 
 func GetConfig() (*Config, error) {
@@ -20,6 +22,7 @@ func GetConfig() (*Config, error) {
 	cfg.DBURI = getStringEnvOrDefault("DB_URI", "empty db uri")
 	cfg.LogLevel = getStringEnvOrDefault("LOG_LEVEL", "debug")
 	cfg.ServerPort = getStringEnvOrDefault("SERVER_PORT", ":8080")
+	cfg.RedisAddress = getStringEnvOrDefault("REDIS_ADDRESS", "redis:6379")
 
 	return &cfg, nil
 }

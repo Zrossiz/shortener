@@ -1,18 +1,19 @@
-package storage
+package postgres
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
-
+	"github.com/lib/pq"
 	_ "github.com/lib/pq"
 )
 
-type Storage struct {
+type PostresStorage struct {
 	conn *sql.DB
 }
 
-func New(conn *sql.DB) *Storage {
-	return &Storage{conn: conn}
+func New(conn *sql.DB) *PostresStorage {
+	return &PostresStorage{conn: conn}
 }
 
 func Connect(DBURI string) (*sql.DB, error) {
@@ -28,19 +29,23 @@ func Connect(DBURI string) (*sql.DB, error) {
 	return db, nil
 }
 
-func (s *Storage) Create(url string, hash string) (string, error) {
-	query := `INSERT INTO urls (original, short) VALUES ($1, $2) RETURNING short`
+func (s *PostresStorage) Create(url string, hash string) error {
+	query := `INSERT INTO urls (original, short) VALUES ($1, $2)`
 
-	var short string
-	err := s.conn.QueryRow(query, url, hash).Scan(&short)
+	_, err := s.conn.Exec(query, url, hash)
+
 	if err != nil {
-		return "", fmt.Errorf("creating entry error: %w", err)
+		var pqErr *pq.Error
+		if errors.As(err, &pqErr) && pqErr.Code == "23505" {
+			return fmt.Errorf("duplicate")
+		}
+		return fmt.Errorf("creating entry error: %w", err)
 	}
 
-	return short, nil
+	return nil
 }
 
-func (s *Storage) Get(hash string) (string, error) {
+func (s *PostresStorage) Get(hash string) (string, error) {
 	query := `SELECT original FROM urls WHERE short = $1`
 
 	var original string
