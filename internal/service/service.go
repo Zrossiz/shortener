@@ -3,8 +3,9 @@ package service
 import (
 	"crypto/sha256"
 	"encoding/binary"
+	"errors"
+	"github.com/Zrossiz/shortener/internal/apperrors"
 
-	"github.com/go-redis/redis"
 	"go.uber.org/zap"
 )
 
@@ -39,7 +40,7 @@ func (s *Service) Get(hash string) (string, error) {
 	if err == nil && originalURLRedis != "" {
 		return originalURLRedis, nil
 	}
-	if err != nil && err != redis.Nil {
+	if err != nil && errors.Is(err, apperrors.ErrRedisNotFound) {
 		s.log.Error("Failed to get redis store", zap.String("hash", hash), zap.Error(err))
 	}
 

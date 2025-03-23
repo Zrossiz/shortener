@@ -2,6 +2,7 @@ package redisdb
 
 import (
 	"fmt"
+	"github.com/Zrossiz/shortener/internal/apperrors"
 	"time"
 
 	"github.com/Zrossiz/shortener/internal/config"
@@ -44,6 +45,9 @@ func (r *RedisStore) Create(hash, original string) error {
 
 func (r *RedisStore) Get(hash string) (string, error) {
 	val, err := r.client.Get(hash).Result()
+	if err == redis.Nil {
+		return "", apperrors.ErrRedisNotFound
+	}
 	if err != nil {
 		return "", err
 	}
