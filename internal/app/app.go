@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"fmt"
+	logger "github.com/Zrossiz/LinkCreator/creator/pkg/log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -15,7 +16,6 @@ import (
 	redisdb "github.com/Zrossiz/shortener/internal/storage/redis"
 	"github.com/Zrossiz/shortener/internal/transport/http/handler"
 	"github.com/Zrossiz/shortener/internal/transport/http/router"
-	logger "github.com/Zrossiz/shortener/pkg/log"
 	_ "github.com/lib/pq"
 
 	"go.uber.org/zap"
