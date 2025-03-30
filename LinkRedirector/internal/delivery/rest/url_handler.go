@@ -1,9 +1,8 @@
 package rest
 
 import (
-	"encoding/json"
-	"github.com/Zrossiz/LinkRedirector/redirector/internal/domain"
-	"github.com/Zrossiz/LinkRedirector/redirector/pkg/apperrors"
+	"github.com/Zrossiz/Redirector/redirector/internal/domain"
+	"github.com/Zrossiz/Redirector/redirector/pkg/apperrors"
 	"strings"
 
 	"net/http"
@@ -27,10 +26,16 @@ func (h *UrlHandler) GetUrl(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if r.Method != http.MethodGet {
+		http.Error(rw, "Invalid Method", http.StatusMethodNotAllowed)
+	}
+
 	hash := parts[4]
 
 	original, err := h.service.Get(hash)
 	if err != nil {
-
+		http.Error(rw, apperrors.ErrInternalServer, http.StatusInternalServerError)
 	}
+
+	http.Redirect(rw, r, original, http.StatusFound)
 }

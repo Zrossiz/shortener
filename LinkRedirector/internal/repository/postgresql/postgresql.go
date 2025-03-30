@@ -2,9 +2,9 @@ package postgresql
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
-	"github.com/lib/pq"
+
+	_ "github.com/lib/pq"
 )
 
 type PosgresRepo struct {
@@ -24,18 +24,17 @@ func Connect(uri string) (*sql.DB, error) {
 	return conn, nil
 }
 
-func (p *PosgresRepo) Create(url string, hash string) error {
-	query := `INSERT INTO urls (original, short) VALUES ($1, $2)`
+func (s *PosgresRepo) Get(hash string) (string, error) {
+	query := `SELECT original FROM urls WHERE short = $1`
 
-	_, err := p.db.Exec(query, url, hash)
-
+	var original string
+	err := s.db.QueryRow(query, hash).Scan(&original)
 	if err != nil {
-		var pqErr *pq.Error
-		if errors.As(err, &pqErr) && pqErr.Code == "23505" {
-			return fmt.Errorf("duplicate")
+		if err == sql.ErrNoRows {
+			return "", fmt.Errorf("entry not found: %w", err)
 		}
-		return fmt.Errorf("creating entry error: %w", err)
+		return "", fmt.Errorf("error fetching entry: %w", err)
 	}
 
-	return nil
+	return original, nil
 }

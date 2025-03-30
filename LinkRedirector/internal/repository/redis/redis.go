@@ -1,9 +1,7 @@
 package redisdb
 
 import (
-	"fmt"
-	"time"
-
+	"github.com/Zrossiz/Redirector/redirector/pkg/apperrors"
 	"github.com/go-redis/redis"
 )
 
@@ -30,10 +28,13 @@ func Connect(addr, password string) (*redis.Client, error) {
 	return rdb, nil
 }
 
-func (r *RedisRepo) Create(hash, original string) error {
-	err := r.client.Set(hash, original, time.Hour*1).Err()
-	if err != nil {
-		return fmt.Errorf("error create redis url: %v", err)
+func (r *RedisRepo) Get(hash string) (string, error) {
+	val, err := r.client.Get(hash).Result()
+	if err == redis.Nil {
+		return "", apperrors.ErrNotFound
 	}
-	return nil
+	if err != nil {
+		return "", err
+	}
+	return val, nil
 }

@@ -1,9 +1,10 @@
 package service
 
 import (
-	"crypto/sha256"
-	"encoding/binary"
-	"github.com/Zrossiz/LinkCreator/creator/internal/domain"
+	"errors"
+	"github.com/Zrossiz/Redirector/redirector/internal/domain"
+	"github.com/Zrossiz/Redirector/redirector/pkg/apperrors"
+
 	"go.uber.org/zap"
 )
 
@@ -27,33 +28,20 @@ func NewService(
 	}
 }
 
-func (s *Service) Create(original string) (string, error) {
-	hash := s.generateHash(original)
+func (s *Service) Get(hash string) (string, error) {
+	originalURLRedis, err := s.redisStore.Get(hash)
+	if err == nil && originalURLRedis != "" {
+		return originalURLRedis, nil
+	}
+	if err != nil && errors.Is(err, apperrors.ErrNotFound) {
+		s.log.Error("Failed to get redis store", zap.String("hash", hash), zap.Error(err))
+	}
 
-	err := s.postgresStore.Create(original, hash)
+	original, err := s.postgresStore.Get(hash)
 	if err != nil {
 		s.log.Error(err.Error())
 		return "", err
 	}
 
-	err = s.redisStore.Create(hash, original)
-	if err != nil {
-		s.log.Error(err.Error())
-	}
-
-	return hash, nil
-}
-
-func (s *Service) generateHash(original string) string {
-	hash := sha256.Sum256([]byte(original))
-
-	num := binary.BigEndian.Uint64(hash[:8])
-
-	shortURL := make([]byte, 7)
-	for i := 0; i < 7; i++ {
-		shortURL[i] = base62Chars[num%62]
-		num /= 62
-	}
-
-	return string(shortURL)
+	return original, nil
 }

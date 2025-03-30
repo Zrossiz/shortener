@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/Zrossiz/LinkRedirector/redirector/internal/delivery/rest"
-	"github.com/Zrossiz/LinkRedirector/redirector/internal/repository/postgresql"
-	redisdb "github.com/Zrossiz/LinkRedirector/redirector/internal/repository/redis"
-	"github.com/Zrossiz/LinkRedirector/redirector/internal/service"
-	"github.com/Zrossiz/LinkRedirector/redirector/pkg/config"
-	"github.com/Zrossiz/LinkRedirector/redirector/pkg/logger"
+	"github.com/Zrossiz/Redirector/redirector/internal/delivery/rest"
+	"github.com/Zrossiz/Redirector/redirector/internal/repository/postgresql"
+	redisdb "github.com/Zrossiz/Redirector/redirector/internal/repository/redis"
+	"github.com/Zrossiz/Redirector/redirector/internal/service"
+	"github.com/Zrossiz/Redirector/redirector/pkg/config"
+	"github.com/Zrossiz/Redirector/redirector/pkg/logger"
+
 	"go.uber.org/zap"
 	"net/http"
 	"os"
@@ -45,7 +46,7 @@ func main() {
 
 	server := &http.Server{
 		Addr:    cfg.Server.Address,
-		Handler: http.HandlerFunc(hand.CreateUrl),
+		Handler: http.HandlerFunc(hand.GetUrl),
 	}
 
 	log.Sugar().Infof("Starting server on %s", cfg.Server.Address)

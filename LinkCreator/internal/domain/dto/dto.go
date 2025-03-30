@@ -1,5 +1,5 @@
 package dto
 
 type CreateUrl struct {
-	Url string `json:"url"`
+	Url string `json:"original_url"`
 }
