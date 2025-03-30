@@ -31,6 +31,10 @@ func Connect(addr, password string) (*redis.Client, error) {
 }
 
 func (r *RedisRepo) Create(hash, original string) error {
+	if original == "" || hash == "" {
+		return fmt.Errorf("invalid input: URL and hash cannot be empty")
+	}
+
 	err := r.client.Set(hash, original, time.Hour*1).Err()
 	if err != nil {
 		return fmt.Errorf("error create redis url: %v", err)

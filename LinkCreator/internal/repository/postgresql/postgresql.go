@@ -25,6 +25,10 @@ func Connect(uri string) (*sql.DB, error) {
 }
 
 func (p *PosgresRepo) Create(url string, hash string) error {
+	if url == "" || hash == "" {
+		return fmt.Errorf("invalid input: URL and hash cannot be empty")
+	}
+
 	query := `INSERT INTO urls (original, short) VALUES ($1, $2)`
 
 	_, err := p.db.Exec(query, url, hash)
