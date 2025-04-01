@@ -1,8 +1,9 @@
 package config
 
 import (
-	"github.com/joho/godotenv"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -24,11 +25,20 @@ func LoadConfig() *Config {
 
 	_ = godotenv.Load()
 
-	cfg.Server.Address = os.Getenv("SERVER_ADDRESS")
-	cfg.Server.LogLevel = os.Getenv("SERVER_LOG_LEVEL")
-	cfg.Redis.Address = os.Getenv("REDIS_ADDRESS")
-	cfg.Redis.Password = os.Getenv("REDIS_PASSWORD")
-	cfg.Postgres.DBURI = os.Getenv("POSTGRES_DB_URI")
+	cfg.Server.Address = getStringEnvOrDefault("SERVER_ADDRESS", "localhost:8080")
+	cfg.Server.LogLevel = getStringEnvOrDefault("SERVER_LOG_LEVEL", "warn")
+	cfg.Redis.Address = getStringEnvOrDefault("REDIS_ADDRESS", "")
+	cfg.Redis.Password = getStringEnvOrDefault("REDIS_PASSWORD", "root")
+	cfg.Postgres.DBURI = getStringEnvOrDefault("POSTGRES_DB_URI", "invalid")
 
 	return &cfg
+}
+
+func getStringEnvOrDefault(envName string, defaultValue string) string {
+	envValue := os.Getenv(envName)
+	if envValue == "" {
+		return defaultValue
+	}
+
+	return envValue
 }
