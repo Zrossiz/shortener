@@ -2,7 +2,7 @@ package domain
 
 import "time"
 
-type Url struct {
+type UrlDAO struct {
 	ID        int       `json:"id"`
 	Original  string    `json:"original"`
 	Hash      string    `json:"hash"`

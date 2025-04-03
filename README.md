@@ -4,11 +4,15 @@
 - Научиться работать с k8s
 - Практика масштабирования микросервисов
 - Практика масштабирования бд
+- Практика работа с брокером сообщений
 - Сделать грамотное ограничение трафика
 
 
 ## Описание проекта
-Проект состоит из двух частей - creator, redirector
+Проект состоит из трех частей
+1. Link creator
+2. Link redirector
+3. Log consumer
 
 ### Link creator
 [Readme.md](https://github.com/Zrossiz/shortener/blob/main/LinkCreator/README.md)
@@ -24,6 +28,14 @@
 - Принимать хеш
 - Искать оригинальный урл по хешу
 - Перенаправлять на оригинальный адрес
+- Отправлять сообщения kafka о переходе по ссылке
+
+### Log consumer
+[Readme.md](https://github.com/Zrossiz/shortener/blob/main/LogConsumer/README.md)  
+#### Функциональность:
+- Читать сообщения из кафка
+- Сохранять данные в базу данных
+- Получение данных для анализа
 
 ## Тесты
 1. Чистая архитектура Робрета Мартина
@@ -49,3 +61,7 @@
 - creator/pkg/config                       coverage: 100.0%
 - creator/pkg/logger                       coverage: 92.3%
  
+### Процент покрытия Consumer:
+- 00.0%
+- creator/pkg/config                       coverage: 100.0%
+- creator/pkg/logger                       coverage: 92.3%

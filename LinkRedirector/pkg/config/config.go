@@ -18,6 +18,10 @@ type Config struct {
 	Postgres struct {
 		DBURI string
 	}
+	Kafka struct {
+		Brokers []string
+		Topic   string
+	}
 }
 
 func LoadConfig() *Config {

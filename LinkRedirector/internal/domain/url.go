@@ -9,5 +9,9 @@ type UrlPostresRepo interface {
 }
 
 type UrlService interface {
-	Get(hash string) (string, error)
+	Get(hash GetUrlDTO) (string, error)
+}
+
+type UrlKafka interface {
+	Send(message UrlKafkaDTO) error
 }

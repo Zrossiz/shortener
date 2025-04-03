@@ -2,16 +2,19 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/Zrossiz/Redirector/redirector/internal/delivery/rest"
+	"github.com/Zrossiz/Redirector/redirector/internal/repository/kafka"
 	"github.com/Zrossiz/Redirector/redirector/internal/repository/postgresql"
 	redisdb "github.com/Zrossiz/Redirector/redirector/internal/repository/redis"
 	"github.com/Zrossiz/Redirector/redirector/internal/service"
 	"github.com/Zrossiz/Redirector/redirector/pkg/config"
 	"github.com/Zrossiz/Redirector/redirector/pkg/logger"
 
-	"go.uber.org/zap"
 	"net/http"
 	"os"
+
+	"go.uber.org/zap"
 )
 
 func main() {
@@ -40,7 +43,12 @@ func main() {
 	postgresRepo := postgresql.NewPostgresRepo(postgresConn)
 	redisRepo := redisdb.New(redisConn)
 
-	serv := service.NewService(log, postgresRepo, redisRepo)
+	kafkaProducer, err := kafka.New(*cfg)
+	if err != nil {
+		log.Error("init kafka producer error", zap.Error(err))
+	}
+
+	serv := service.NewService(log, postgresRepo, redisRepo, kafkaProducer)
 
 	hand := rest.NewUrlHandler(serv)
 
