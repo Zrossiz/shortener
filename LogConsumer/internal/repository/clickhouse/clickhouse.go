@@ -27,7 +27,7 @@ func NewClickhouse(conn *sql.DB) *ClickhouseDB {
 	}
 }
 
-func (c *ClickhouseDB) Create(data domain.RegisterRedirectEvent) error {
+func (c *ClickhouseDB) Create(data domain.RegisterRedirectEventDTO) error {
 	query := `INSERT INTO redirects (original, short, user_ip, os, created_at) VALUES ($1, $2, $3, $4, $5)`
 
 	_, err := c.conn.Exec(query, data.Original, data.Short, data.UserIP, data.Os, time.Now())

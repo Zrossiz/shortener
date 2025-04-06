@@ -1,6 +1,10 @@
 package domain
 
 type ClickhouseDB interface {
-	Create(data RegisterRedirectEvent) error
+	Create(data RegisterRedirectEventDTO) error
 	Get() ([]RedirectEventDAO, error)
+}
+
+type Kafka interface {
+	Create(data RegisterRedirectEventDTO) error
 }
