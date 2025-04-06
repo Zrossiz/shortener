@@ -3,6 +3,7 @@ package kafka
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/IBM/sarama"
 	"github.com/Zrossiz/Redirector/redirector/internal/domain"
@@ -18,15 +19,27 @@ func New(cfg config.Config) (*KafkaProducer, error) {
 	config := sarama.NewConfig()
 	config.Producer.Return.Successes = true
 
-	producer, err := sarama.NewSyncProducer(cfg.Kafka.Brokers, config)
-	if err != nil {
-		return nil, fmt.Errorf("error sync producer %v", err)
+	var producer sarama.SyncProducer
+	var err error
+
+	maxRetries := 5
+	retryInterval := time.Second * 5
+
+	for i := 0; i < maxRetries; i++ {
+		producer, err = sarama.NewSyncProducer(cfg.Kafka.Brokers, config)
+		if err == nil {
+			fmt.Print("Kafka producer initiated\n")
+			return &KafkaProducer{
+				producer: producer,
+				topic:    cfg.Kafka.Topic,
+			}, nil
+		}
+
+		fmt.Printf("Attempt %d/%d to connect to Kafka failed: %v\n", i+1, maxRetries, err)
+		time.Sleep(retryInterval)
 	}
 
-	return &KafkaProducer{
-		producer: producer,
-		topic:    cfg.Kafka.Topic,
-	}, nil
+	return nil, fmt.Errorf("error creating sync producer after %d retries: %v", maxRetries, err)
 }
 
 func (k *KafkaProducer) Send(message domain.UrlKafkaDTO) error {

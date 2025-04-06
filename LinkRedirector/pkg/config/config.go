@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -34,6 +35,8 @@ func LoadConfig() *Config {
 	cfg.Redis.Address = getStringEnvOrDefault("REDIS_ADDRESS", "")
 	cfg.Redis.Password = getStringEnvOrDefault("REDIS_PASSWORD", "root")
 	cfg.Postgres.DBURI = getStringEnvOrDefault("POSTGRES_DB_URI", "invalid")
+	cfg.Kafka.Brokers = strings.Split(getStringEnvOrDefault("KAFKA_BROKERS", "localhost:9092,"), ",")
+	cfg.Kafka.Topic = getStringEnvOrDefault("KAFKA_TOPIC", "test")
 
 	return &cfg
 }

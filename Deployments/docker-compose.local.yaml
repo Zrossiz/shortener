@@ -47,6 +47,12 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     volumes:
       - kafka_data:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD", "kafka-topics.sh", "--bootstrap-server", "localhost:9092", "--list"]
+      interval: 30s
+      retries: 5
+      start_period: 10s
+      timeout: 10s
 
   clickhouse:
     image: clickhouse/clickhouse-server:latest
@@ -60,6 +66,37 @@ services:
       CLICKHOUSE_DB: shortener
       CLICKHOUSE_USER: default
       CLICKHOUSE_PASSWORD: root
+
+  log-consumer:
+    build:
+      context: ../LogConsumer
+    container_name: log-consumer
+    depends_on:
+      - kafka
+      - clickhouse
+    env_file:
+      - ../LogConsumer/.env
+  
+  link-redirector:
+    build:
+      context: ../LinkRedirector
+    container_name: link-redirector
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+    env_file:
+      - ../LinkRedirector/.env
+  
+  link-creator:
+    build:
+      context: ../LinkCreator
+    container_name: link-creator
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - ../LinkCreator/.env
 
 volumes:
   postgres_data:

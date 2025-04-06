@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/Zrossiz/LogConsumer/consumer/internal/domain"
+
+	_ "github.com/ClickHouse/clickhouse-go/v2"
 )
 
 type ClickhouseDB struct {
