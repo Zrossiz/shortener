@@ -74,6 +74,8 @@ services:
     depends_on:
       - kafka
       - clickhouse
+    ports:
+      - "3000:3000"
     env_file:
       - ../LogConsumer/.env
   
@@ -85,6 +87,8 @@ services:
       - postgres
       - redis
       - kafka
+    ports:
+      - "3001:3001"
     env_file:
       - ../LinkRedirector/.env
   
@@ -95,6 +99,8 @@ services:
     depends_on:
       - postgres
       - redis
+    ports:
+      - "3002:3002"
     env_file:
       - ../LinkCreator/.env
 
