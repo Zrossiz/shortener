@@ -67,43 +67,6 @@ services:
       CLICKHOUSE_USER: default
       CLICKHOUSE_PASSWORD: root
 
-  log-consumer:
-    build:
-      context: ../LogConsumer
-    container_name: log-consumer
-    depends_on:
-      - kafka
-      - clickhouse
-    ports:
-      - "3000:3000"
-    env_file:
-      - ../LogConsumer/.env
-  
-  link-redirector:
-    build:
-      context: ../LinkRedirector
-    container_name: link-redirector
-    depends_on:
-      - postgres
-      - redis
-      - kafka
-    ports:
-      - "3001:3001"
-    env_file:
-      - ../LinkRedirector/.env
-  
-  link-creator:
-    build:
-      context: ../LinkCreator
-    container_name: link-creator
-    depends_on:
-      - postgres
-      - redis
-    ports:
-      - "3002:3002"
-    env_file:
-      - ../LinkCreator/.env
-
 volumes:
   postgres_data:
   redis_data:

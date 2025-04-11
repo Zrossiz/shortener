@@ -9,9 +9,9 @@
 
 ## Описание проекта
 Проект состоит из трех частей
-1. Link creator
-2. Link redirector
-3. Log consumer
+1. [Link creator](https://github.com/Zrossiz/url-shortener.generator)
+2. [Link redirector](https://github.com/Zrossiz/url-shortener.logger)
+3. [Log consumer](https://github.com/Zrossiz/url-shortener.redirector)
 
 ### Быстрый старт
 В каждом проекте есть .env.example.   
@@ -19,7 +19,7 @@
 Запустите через docker compose -f docker-compose.local.yaml up --build  
 
 ### Link creator
-[Readme.md](https://github.com/Zrossiz/url-shortener.generator/README.md)
+[Readme.md](https://github.com/Zrossiz/url-shortener.generator/blob/main/README.md)
 #### Функциональность:
 - Принимать оригинальный адрес
 - Создавать хеш
@@ -27,7 +27,7 @@
 - Обрабатывать дубли
 
 ### Link redirector
-[Readme.md](https://github.com/Zrossiz/url-shortener.logger/README.md)  
+[Readme.md](https://github.com/Zrossiz/url-shortener.logger/blob/main/README.md)  
 #### Функциональность:
 - Принимать хеш
 - Искать оригинальный урл по хешу
@@ -35,7 +35,7 @@
 - Отправлять сообщения kafka о переходе по ссылке
 
 ### Log consumer
-[Readme.md](https://github.com/Zrossiz/url-shortener.redirector/README.md)  
+[Readme.md](https://github.com/Zrossiz/url-shortener.redirector/blob/main/README.md)  
 #### Функциональность:
 - Читать сообщения из кафка
 - Сохранять данные в базу данных
