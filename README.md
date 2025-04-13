@@ -12,6 +12,7 @@
 1. [Link creator](https://github.com/Zrossiz/url-shortener.generator)
 2. [Link redirector](https://github.com/Zrossiz/url-shortener.logger)
 3. [Log consumer](https://github.com/Zrossiz/url-shortener.redirector)
+![Дизайн системы](./public/schema.png)
 
 ### Быстрый старт
 В каждом проекте есть .env.example.   
